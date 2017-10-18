@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>观察者模式的测试</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<div class="A">
+		目标
+		<!--改变通知的内容-->
+		<input type="text" name="search" id="text">
+		<!--将输入框改变后的文本通知给观察者-->
+		<input type="button" name="click" id="sent" value="发送通知">
+	</div>
+	<div class="B">
+		观察者
+		<!--点击订阅输入框的变化-->
+		<input type="button" name="addObserver" id="addObserver" value="点击增加订阅">
+		<p>订阅成功后，点击发送通知，下方的内容将被输入框内容替换</p>
+		<!--执行订阅者的update方法更新内容-->
+		<h1 id="showBox">订阅成功后，点击发送通知，这里的文本将被输入框内容替换</h1>
+	</div>
+</body>
+<script type="text/javascript">
+	/**
+	* 该页面进行Observer观察者模式测试
+	* created by jianbo Yip
+	* date: 2017/10/17
+	* ObseverList ---> 观察者基类，包括增加，清空，计数，获取，插入，下标，删除特定项等属性方法
+	* Subject ----> 模拟的目标类，继承和进一步封装了ObserverList，包括增加观察者，清除观察者，发送通知等属性方法
+	* Observer ---> 订阅者基类，接收到通知后，执行特定脚本
+	*/
+	// 拓展对象属性公用方法
+	function extend(obj, extension){
+		for(var key in obj) {
+			extension[key] = obj[key];
+		}
+	}
+
+	// 设定观察者类，这里默认为空数组
+	function ObserverList() {
+		this.observerList = [];
+	}
+	// 原型增加Add,往观察者数组增加订阅通知的对象
+	ObserverList.prototype.Add = function(obj) {
+		return this.observerList.push(obj);
+	}
+	// 清空订阅列表
+	ObserverList.prototype.Empty = function(){
+		this.observerList = [];
+	}
+	// 返回订阅列表长度
+	ObserverList.prototype.Count = function(){
+		return this.observerList.length;
+	}
+	// 通过下标获取订阅item
+	ObserverList.prototype.Get = function(index){
+		if(index > -1 && index < this.observerList.length){
+			return this.observerList[index];
+		}
+	}
+	// 插入item，简化为首尾两端
+	ObserverList.prototype.Insert = function(obj, index){
+		var pointer = -1;
+		if(index == 0){
+			this.observerList.unshift(obj);
+			pointer = index;
+		} else if (index == this.observerList.length){
+			this.observerList.push(obj);
+			pointer = index;
+		}
+		return pointer;
+	}
+	// 搜索订阅者哉列表中的下标
+	ObserverList.prototype.IndexOf = function(obj, startIndex){
+		var i = startIndex,pointer = -1;
+		while(i < this.observerList.length){
+			if(this.observerList[i] === obj){
+				pointer = i;
+			}
+			i++;
+		}
+		return poniter;
+	}
+	// 通过下标删除项，简化首位
+	ObserverList.prototype.RomoveIndexAt = function(index) {
+		// 移除数组头部的 
+		if(index == 0){
+			this.observerList.shift()
+		} else if (index === this.observerList.length) {
+			// 移除数组尾部
+			this.observerList.pop();
+		}
+	}
+
+	/**
+	* 设定目标对象的类，通过属性继承ObserverList类
+	* 进一步封装订阅者处理的方法
+	*/
+	function Subject(){
+		this.observerList = new ObserverList();
+	}
+	Subject.prototype.AddOberver = function(observer) {
+		this.observerList.Add(observer);
+	}
+	Subject.prototype.RemoveObserver = function(observer) {
+		this.observerList.RemoveIndexAt(this.observerList.indexOf(observer, 0));
+	}
+	Subject.prototype.Notify = function (context) {
+		var ObeserveeCount = this.observerList.Count();
+		for( var i = 0; i < ObeserveeCount; i++) {
+			/**
+			* 注意，这里要拿到实例内部项，要通过写好的Get方法，因为数组来自父类
+			* 这里的Update方法未定义，observer订阅者在被加入到数组前，会增加一个Update属性方法
+			*/
+			this.observerList.Get(i).Update(context);
+		}
+	}
+
+	//  定义默认的订阅者
+	function Observer() {
+		this.Update = function(){
+			console.log('该实例没有设定自定义更新操作，请设置');
+		}
+	}
+
+	var sentObj = document.getElementById('sent'),
+		showBox = document.getElementById('showBox'),
+		addObse = document.getElementById('addObserver'),
+		inputText = document.getElementById('text');
+
+	// 拓展通知按钮，定义目标发送通知的时机，这里订阅按钮状态和事件
+	extend(new Subject, sentObj);
+	sentObj.addEventListener('click', function(){
+		var newText = inputText.value;
+		if(!newText) {
+			console.log('内容为空，不通知');
+			return;
+		}
+		// 发送通知
+		sentObj.Notify(newText);
+	})
+
+	// 点击增加点阅的按钮
+	addObse.addEventListener('click', function(){
+		extend(new Observer(), showBox);
+		showBox.Update = function(value){
+			this.innerHTML = value;
+		}
+		addObse.value = '订阅成功';
+		// 增加订阅
+		sentObj.AddOberver(showBox);
+	})
+</script>
+</html>

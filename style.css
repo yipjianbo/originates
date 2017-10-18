@@ -1,0 +1,14 @@
+* {
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+}
+input {
+	display: block;
+}
+.A,.B {
+	padding: 10px;
+	border: 1px solid #e3e3e3;
+	width: 50%;
+	float: left;
+}
