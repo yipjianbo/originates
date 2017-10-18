@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title></title>
+	<title>发布订阅模式</title>
 	<meta charset="utf-8">
 	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
@@ -30,6 +30,7 @@
 	var pubsub = {}; // 发布订阅模式封装的对象
 	(function(q){
 		/**
+		* 发布订阅模式的测试页面
 		* 目标改变时，发布通知，通知的类型type1、type2可以自定义任何字符串
 		* 观察者在订阅通知时，会传入fun1、fun2、fun3等，用于发送通知时执行回调
 		* topics : {
