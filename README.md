@@ -1,4 +1,2 @@
-# originates
-try to push my code to GitHub
-
-- 这是个测试项目，啦啦啦
+# 学习笔记
+- 每天进步一点点，啦啦啦
